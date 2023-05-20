@@ -50,12 +50,6 @@ public class Stock {
 
     @Override
     public String toString() {
-        return "Stock{" +
-                "name='" + name + '\'' +
-                ", price=" + price +
-                ", updown=" + updown +
-                ", rate=" + rate +
-                ", volume=" + volume +
-                '}';
+        return "%s\n%s  |  %s  |  %s  |  %s \n".formatted(getName(), getPrice(), getUpdown(), getRate(), getVolume());
     }
 }
