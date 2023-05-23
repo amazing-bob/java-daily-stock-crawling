@@ -4,26 +4,23 @@ import com.example.javadailystockcrawling.dto.Index;
 import com.example.javadailystockcrawling.dto.Stock;
 import com.example.javadailystockcrawling.dto.UpperLimitStocks;
 import com.example.javadailystockcrawling.service.CrawlingService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/crawling")
-//@RequiredArgsConstructor
+@RequiredArgsConstructor
+@Slf4j
 public class CrawlingController {
-    private CrawlingService crawlingService;
-
-    public CrawlingController(CrawlingService crawlingService) {
-        this.crawlingService = crawlingService;
-    }
+    private final CrawlingService crawlingService;
 
     @GetMapping("")
-    public void crawlingAll() {
+    public ResponseEntity crawlingAll() {
         System.out.println("\n시황\n---------------");
         List<Index> marketIndexes = crawlingService.crawlingMarketIndexes();
         for (Index index : marketIndexes) {
@@ -39,19 +36,27 @@ public class CrawlingController {
         for ( Stock stock : upperLimitStocks.getKosdaqUpperLimitStocks()) {
             System.out.println(stock);
         }
+
+        return ResponseEntity
+                .ok()
+                .body("SUCCESS!!");
     }
 
     @RequestMapping(path="/upper-limit-stocks", method = RequestMethod.GET)
-    public UpperLimitStocks crawlingUppserLimitStocks() {
-        System.out.println("======== /api/crawling/upper-limit-stocks");
+    public ResponseEntity<UpperLimitStocks> crawlingUppserLimitStocks() {
+        log.info("======== /api/crawling/upper-limit-stocks");
         UpperLimitStocks upperLimitStocks = crawlingService.crawlingUppserLimitStocks();
-        return upperLimitStocks;
+        return ResponseEntity
+                .ok()
+                .body(upperLimitStocks);
     }
 
     @GetMapping("/market-indexes")
-    public List<Index> crawlingMarketIndexes() {
-        System.out.println("======== /api/crawling/market-indexes");
+    public ResponseEntity<List<Index>> crawlingMarketIndexes() throws Exception {
+        log.info("======== /api/crawling/market-indexes");
         List<Index> marketIndexes = crawlingService.crawlingMarketIndexes();
-        return marketIndexes;
+        return ResponseEntity
+                .ok()
+                .body(marketIndexes);
     }
 }
