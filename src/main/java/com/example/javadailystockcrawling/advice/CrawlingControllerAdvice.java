@@ -1,5 +1,6 @@
 package com.example.javadailystockcrawling.advice;
 
+import com.example.javadailystockcrawling.exception.AuthException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +14,16 @@ public class CrawlingControllerAdvice {
     @ExceptionHandler(value = Exception.class)
     public ResponseEntity exception(Exception e) {
       log.error("",e);
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("");
+      return ResponseEntity
+              .status(HttpStatus.INTERNAL_SERVER_ERROR)
+              .body("");
+    }
+
+    @ExceptionHandler(value = AuthException.class)
+    public ResponseEntity authException(AuthException ae) {
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .build();
     }
 
 }

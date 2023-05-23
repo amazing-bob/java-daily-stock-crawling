@@ -1,5 +1,6 @@
 package com.example.javadailystockcrawling.controller;
 
+import com.example.javadailystockcrawling.annotation.Auth;
 import com.example.javadailystockcrawling.dto.Index;
 import com.example.javadailystockcrawling.dto.Stock;
 import com.example.javadailystockcrawling.dto.UpperLimitStocks;
@@ -15,6 +16,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/crawling")
 @RequiredArgsConstructor
+@Auth
 @Slf4j
 public class CrawlingController {
     private final CrawlingService crawlingService;
