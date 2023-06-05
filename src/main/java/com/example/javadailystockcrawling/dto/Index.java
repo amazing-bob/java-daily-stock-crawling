@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.jackson.JsonComponent;
 
+import java.text.DecimalFormat;
+
 @JsonComponent()
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Data
@@ -16,14 +18,14 @@ import org.springframework.boot.jackson.JsonComponent;
 @Slf4j
 public class Index {
     private String name;
-    private String value;
-    private String updown;
-    private String rate;
-
+    private long value;
+    private long updown;
+    private double rate;
 
 
     @Override
     public String toString() {
-        return "%s\t\t%s  |  %s  |  %s".formatted(this.name, this.value, this.updown, (this.rate == null ? "" : this.rate));
+        DecimalFormat df = new DecimalFormat("###,###");
+        return "%s\t\t%s  |  %s  |  %s".formatted(this.name, df.format(this.value), df.format(this.updown), this.rate);
     }
 }
