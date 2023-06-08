@@ -7,6 +7,7 @@ spring:
       enabled: true
       path: /h2-console
   jpa:
+    generate-ddl: false
     defer-datasource-initialization: false
     show-sql: true
     properties:
@@ -15,15 +16,16 @@ spring:
         format_sql: true
     hibernate:
       ddl-auto: update
+
   datasource:
-    url: jdbc:h2:mem:testdb
+    url: jdbc:h2:~/Develope/daily-crawling-db
     driver-class-name: org.h2.Driver
     username: sa
     password:
-  sql:
-    init:
-      mode:
-      schema-locations: classpath:h2/schema.sql
+#  sql:
+#    init:
+#      mode:
+#      schema-locations: classpath:h2/schema.sql
 
 
 

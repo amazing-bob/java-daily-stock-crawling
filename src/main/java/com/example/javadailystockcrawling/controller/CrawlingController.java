@@ -1,13 +1,12 @@
 package com.example.javadailystockcrawling.controller;
 
 import com.example.javadailystockcrawling.annotation.Auth;
-import com.example.javadailystockcrawling.dto.Index;
+import com.example.javadailystockcrawling.dto.MarketIndex;
 import com.example.javadailystockcrawling.dto.Stock;
 import com.example.javadailystockcrawling.dto.UpperLimitStocks;
 import com.example.javadailystockcrawling.service.CrawlingService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,9 +23,9 @@ public class CrawlingController {
     @GetMapping("")
     public ResponseEntity crawlingAll() {
         System.out.println("\n시황\n---------------");
-        List<Index> marketIndexes = crawlingService.crawlingMarketIndexes();
-        for (Index index : marketIndexes) {
-            System.out.println(index);
+        List<MarketIndex> marketMarketIndexIndices = crawlingService.crawlingMarketIndexes();
+        for (MarketIndex marketIndex : marketMarketIndexIndices) {
+            System.out.println(marketIndex);
         }
 
         System.out.println("\n\n상한가\n---------------");
@@ -54,11 +53,11 @@ public class CrawlingController {
     }
 
     @GetMapping("/market-indexes")
-    public ResponseEntity<List<Index>> crawlingMarketIndexes() throws Exception {
+    public ResponseEntity<List<MarketIndex>> crawlingMarketIndexes() throws Exception {
         log.info("======== /api/crawling/market-indexes");
-        List<Index> marketIndexes = crawlingService.crawlingMarketIndexes();
+        List<MarketIndex> marketMarketIndexIndices = crawlingService.crawlingMarketIndexes();
         return ResponseEntity
                 .ok()
-                .body(marketIndexes);
+                .body(marketMarketIndexIndices);
     }
 }

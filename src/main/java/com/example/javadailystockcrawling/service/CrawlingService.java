@@ -1,8 +1,11 @@
 package com.example.javadailystockcrawling.service;
 
-import com.example.javadailystockcrawling.dto.Index;
+import com.example.javadailystockcrawling.dto.MarketIndex;
 import com.example.javadailystockcrawling.dto.Stock;
 import com.example.javadailystockcrawling.dto.UpperLimitStocks;
+import com.example.javadailystockcrawling.repository.StockRepository;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -15,7 +18,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
+@Slf4j
 public class CrawlingService {
+    private final StockRepository stockRepository;
+
+
     // 상한가 종목 크롤링
     public UpperLimitStocks crawlingUppserLimitStocks() {
         List<Stock> kospiUpperLimitStocks = new ArrayList<>();
@@ -43,6 +51,8 @@ public class CrawlingService {
 
                     Stock stock = new Stock();
                     stock.setName(name);
+                    stock.setCode("testcode1");
+                    stock.setMarket("kospi");
                     stock.setPrice(price);
                     stock.setUpdown(updown);
                     stock.setRate(rate);
@@ -50,7 +60,7 @@ public class CrawlingService {
 
                     kospiUpperLimitStocks.add(stock);
                 }
-
+                stockRepository.saveAll(kospiUpperLimitStocks);
             });
 
             // KOSDAQ 상한가 종목 크롤링
@@ -70,7 +80,9 @@ public class CrawlingService {
                     long volume = Long.parseLong(volumeStr.replaceAll(",", "").strip());
 
                     Stock stock = new Stock();
+                    stock.setCode("testcode1");
                     stock.setName(name);
+                    stock.setMarket("kosdaq");
                     stock.setPrice(price);
                     stock.setUpdown(updown);
                     stock.setRate(rate);
@@ -78,7 +90,7 @@ public class CrawlingService {
 
                     kosdaqUpperLimitStocks.add(stock);
                 }
-
+//                stockRepository.saveAll(kosdaqUpperLimitStocks);
             });
 
         } catch (IOException e) {
@@ -91,101 +103,101 @@ public class CrawlingService {
 
 
     // 시장 지표 크롤링
-    public List<Index> crawlingMarketIndexes() {
+    public List<MarketIndex> crawlingMarketIndexes() {
 
-        List<Index> indexList = new ArrayList<>();
-        List<Index> domesticIndexList = crawlingDomesticIndexes();
-        List<Index> usIndexList = crawlingUsIndexes();
-        List<Index> materialIndexList = crawlingMaterialIndexes();
+        List<MarketIndex> marketIndexList = new ArrayList<>();
+        List<MarketIndex> domesticMarketListIndex = crawlingDomesticIndexes();
+        List<MarketIndex> usMarketListIndex = crawlingUsIndexes();
+        List<MarketIndex> materialMarketListIndex = crawlingMaterialIndexes();
 
-        indexList.addAll(domesticIndexList);
-        indexList.addAll(usIndexList);
-        indexList.addAll(materialIndexList);
+        marketIndexList.addAll(domesticMarketListIndex);
+        marketIndexList.addAll(usMarketListIndex);
+        marketIndexList.addAll(materialMarketListIndex);
 
-        return indexList;
+        return marketIndexList;
     }
 
-    private List<Index> crawlingMaterialIndexes() {
-        List<Index> indexList = new ArrayList<>();
+    private List<MarketIndex> crawlingMaterialIndexes() {
+        List<MarketIndex> marketIndexList = new ArrayList<>();
 
         String url = "https://finance.naver.com/marketindex/";
         Document doc = getDocumentFromConnection(url);
         if (doc != null) {
-            Index dollorIndex = new Index();
-            dollorIndex.setName(doc.selectFirst("#exchangeList > li.on > a.head.usd > h3 > span").ownText());
-            dollorIndex.setValue(Long.parseLong(doc.selectFirst("#exchangeList > li.on > a.head.usd > div > span.value").ownText().strip()));
-            dollorIndex.setUpdown(Long.parseLong(doc.selectFirst("#exchangeList > li:nth-child(1) > a.head.usd > div > span.change").ownText().strip()));
-            indexList.add(dollorIndex);
+            MarketIndex dollorMarketIndex = new MarketIndex();
+            dollorMarketIndex.setName(doc.selectFirst("#exchangeList > li.on > a.head.usd > h3 > span").ownText());
+            dollorMarketIndex.setIvalue(Double.parseDouble(doc.selectFirst("#exchangeList > li.on > a.head.usd > div > span.value").ownText().replaceAll(",", "").strip()));
+            dollorMarketIndex.setUpdown(Double.parseDouble(doc.selectFirst("#exchangeList > li:nth-child(1) > a.head.usd > div > span.change").ownText().replaceAll(",", "").strip()));
+            marketIndexList.add(dollorMarketIndex);
 
-            Index wtiIndex = new Index();
-            wtiIndex.setName(doc.selectFirst("#oilGoldList > li.on > a.head.wti > h3 > span").ownText());
-            wtiIndex.setValue(Long.parseLong(doc.selectFirst("#oilGoldList > li:nth-child(1) > a.head.wti > div > span.value").ownText().strip()));
-            wtiIndex.setUpdown(Long.parseLong(doc.selectFirst("#oilGoldList > li:nth-child(1) > a.head.wti > div > span.value").ownText().strip()));
-            indexList.add(wtiIndex);
+            MarketIndex wtiMarketIndex = new MarketIndex();
+            wtiMarketIndex.setName(doc.selectFirst("#oilGoldList > li.on > a.head.wti > h3 > span").ownText());
+            wtiMarketIndex.setIvalue(Double.parseDouble(doc.selectFirst("#oilGoldList > li:nth-child(1) > a.head.wti > div > span.value").ownText().replaceAll(",", "").strip()));
+            wtiMarketIndex.setUpdown(Double.parseDouble(doc.selectFirst("#oilGoldList > li:nth-child(1) > a.head.wti > div > span.value").ownText().replaceAll(",", "").strip()));
+            marketIndexList.add(wtiMarketIndex);
 
-            Index goldIndex = new Index();
-            goldIndex.setName(doc.selectFirst("#oilGoldList > li:nth-child(3) > a.head.gold_inter > h3 > span").ownText());
-            goldIndex.setValue(Long.parseLong(doc.selectFirst("#oilGoldList > li:nth-child(3) > a.head.gold_inter > div > span.value").ownText().strip()));
-            goldIndex.setUpdown(Long.parseLong(doc.selectFirst("#oilGoldList > li:nth-child(3) > a.head.gold_inter > div > span.change").ownText().strip()));
-            indexList.add(goldIndex);
+            MarketIndex goldMarketIndex = new MarketIndex();
+            goldMarketIndex.setName(doc.selectFirst("#oilGoldList > li:nth-child(3) > a.head.gold_inter > h3 > span").ownText());
+            goldMarketIndex.setIvalue(Double.parseDouble(doc.selectFirst("#oilGoldList > li:nth-child(3) > a.head.gold_inter > div > span.value").ownText().replaceAll(",", "").strip()));
+            goldMarketIndex.setUpdown(Double.parseDouble(doc.selectFirst("#oilGoldList > li:nth-child(3) > a.head.gold_inter > div > span.change").ownText().replaceAll(",", "").strip()));
+            marketIndexList.add(goldMarketIndex);
 
         }
-        return indexList;
+        return marketIndexList;
     }
 
-    private List<Index> crawlingUsIndexes() {
-        List<Index> indexList = new ArrayList<>();
+    private List<MarketIndex> crawlingUsIndexes() {
+        List<MarketIndex> marketIndexList = new ArrayList<>();
 
         String url = "https://finance.naver.com/world/";
         Document doc = getDocumentFromConnection(url);
         if (doc != null) {
-            Index dowIndex = new Index();
-            dowIndex.setName(doc.selectFirst("#worldIndexColumn1 > li.on > dl > dt > a > span").ownText());
-            dowIndex.setValue(Long.parseLong(doc.selectFirst("#worldIndexColumn1 > li:nth-child(1) > dl > dd.point_status > strong").ownText().strip()));
-            dowIndex.setUpdown(Long.parseLong(doc.selectFirst("#worldIndexColumn1 > li:nth-child(1) > dl > dd.point_status > em").ownText().strip()));
-            dowIndex.setRate(Double.parseDouble(doc.selectFirst("#worldIndexColumn1 > li:nth-child(1) > dl > dd.point_status > span:nth-child(3)").ownText().strip()));
-            indexList.add(dowIndex);
+            MarketIndex dowMarketIndex = new MarketIndex();
+            dowMarketIndex.setName(doc.selectFirst("#worldIndexColumn1 > li.on > dl > dt > a > span").ownText());
+            dowMarketIndex.setIvalue(Double.parseDouble(doc.selectFirst("#worldIndexColumn1 > li:nth-child(1) > dl > dd.point_status > strong").ownText().replaceAll(",", "").strip()));
+            dowMarketIndex.setUpdown(Double.parseDouble(doc.selectFirst("#worldIndexColumn1 > li:nth-child(1) > dl > dd.point_status > em").ownText().replaceAll(",", "").strip()));
+            dowMarketIndex.setRate(Double.parseDouble(doc.selectFirst("#worldIndexColumn1 > li:nth-child(1) > dl > dd.point_status > span:nth-child(3)").ownText().replaceAll("%", "").strip()));
+            marketIndexList.add(dowMarketIndex);
 
-            Index nasdaqIndex = new Index();
-            nasdaqIndex.setName(doc.selectFirst("#worldIndexColumn2 > li.on > dl > dt > a > span").ownText());
-            nasdaqIndex.setValue(Long.parseLong(doc.selectFirst("#worldIndexColumn2 > li:nth-child(1) > dl > dd.point_status > strong").ownText().strip()));
-            nasdaqIndex.setUpdown(Long.parseLong(doc.selectFirst("#worldIndexColumn2 > li:nth-child(1) > dl > dd.point_status > em").ownText().strip()));
-            nasdaqIndex.setRate(Double.parseDouble(doc.selectFirst("#worldIndexColumn2 > li:nth-child(1) > dl > dd.point_status > span:nth-child(3)").ownText()));
-            indexList.add(nasdaqIndex);
+            MarketIndex nasdaqMarketIndex = new MarketIndex();
+            nasdaqMarketIndex.setName(doc.selectFirst("#worldIndexColumn2 > li.on > dl > dt > a > span").ownText());
+            nasdaqMarketIndex.setIvalue(Double.parseDouble(doc.selectFirst("#worldIndexColumn2 > li:nth-child(1) > dl > dd.point_status > strong").ownText().replaceAll(",", "").strip()));
+            nasdaqMarketIndex.setUpdown(Double.parseDouble(doc.selectFirst("#worldIndexColumn2 > li:nth-child(1) > dl > dd.point_status > em").ownText().replaceAll(",", "").strip()));
+            nasdaqMarketIndex.setRate(Double.parseDouble(doc.selectFirst("#worldIndexColumn2 > li:nth-child(1) > dl > dd.point_status > span:nth-child(3)").ownText().replaceAll("%", "").strip()));
+            marketIndexList.add(nasdaqMarketIndex);
 
-            Index snpIndex = new Index();
-            snpIndex.setName(doc.selectFirst("#worldIndexColumn3 > li.on > dl > dt > a > span").ownText());
-            snpIndex.setValue(Long.parseLong(doc.selectFirst("#worldIndexColumn3 > li:nth-child(1) > dl > dd.point_status > strong").ownText().strip()));
-            snpIndex.setUpdown(Long.parseLong(doc.selectFirst("#worldIndexColumn3 > li:nth-child(1) > dl > dd.point_status > em").ownText().strip()));
-            snpIndex.setRate(Double.parseDouble(doc.selectFirst("#worldIndexColumn3 > li:nth-child(1) > dl > dd.point_status > span:nth-child(3)").ownText().strip()));
-            indexList.add(snpIndex);
+            MarketIndex snpMarketIndex = new MarketIndex();
+            snpMarketIndex.setName(doc.selectFirst("#worldIndexColumn3 > li.on > dl > dt > a > span").ownText());
+            snpMarketIndex.setIvalue(Double.parseDouble(doc.selectFirst("#worldIndexColumn3 > li:nth-child(1) > dl > dd.point_status > strong").ownText().replaceAll(",", "").strip()));
+            snpMarketIndex.setUpdown(Double.parseDouble(doc.selectFirst("#worldIndexColumn3 > li:nth-child(1) > dl > dd.point_status > em").ownText().replaceAll(",", "").strip()));
+            snpMarketIndex.setRate(Double.parseDouble(doc.selectFirst("#worldIndexColumn3 > li:nth-child(1) > dl > dd.point_status > span:nth-child(3)").ownText().replaceAll("%", "").strip()));
+            marketIndexList.add(snpMarketIndex);
 
         }
-        return indexList;
+        return marketIndexList;
     }
 
-    private List<Index> crawlingDomesticIndexes() {
-        List<Index> indexList = new ArrayList<>();
+    private List<MarketIndex> crawlingDomesticIndexes() {
+        List<MarketIndex> marketIndexList = new ArrayList<>();
 
         String url = "https://finance.naver.com/";
         Document doc = getDocumentFromConnection(url);
         if (doc != null) {
-            Index kospiIndex = new Index();
-            kospiIndex.setName(doc.selectFirst("#content > div.article > div.section2 > div.section_stock_market > div.section_stock > div.kospi_area.group_quot.quot_opn > div.heading_area > h4 > a > em > span").ownText());
-            kospiIndex.setValue(Long.parseLong(doc.selectFirst("#content > div.article > div.section2 > div.section_stock_market > div.section_stock > div.kospi_area.group_quot.quot_opn > div.heading_area > a > span > span.num").ownText().strip()));
-            kospiIndex.setUpdown(Long.parseLong(doc.selectFirst("#content > div.article > div.section2 > div.section_stock_market > div.section_stock > div.kospi_area.group_quot.quot_opn > div.heading_area > a > span > span.num2").ownText().strip()));
-            kospiIndex.setRate(Double.parseDouble(doc.selectFirst("#content > div.article > div.section2 > div.section_stock_market > div.section_stock > div.kospi_area.group_quot.quot_opn > div.heading_area > a > span > span.num3").ownText().strip()));
-            indexList.add(kospiIndex);
+            MarketIndex kospiMarketIndex = new MarketIndex();
+            kospiMarketIndex.setName(doc.selectFirst("#content > div.article > div.section2 > div.section_stock_market > div.section_stock > div.kospi_area.group_quot.quot_opn > div.heading_area > h4 > a > em > span").ownText());
+            kospiMarketIndex.setIvalue(Double.parseDouble(doc.selectFirst("#content > div.article > div.section2 > div.section_stock_market > div.section_stock > div.kospi_area.group_quot.quot_opn > div.heading_area > a > span > span.num").ownText().replaceAll(",", "").strip()));
+            kospiMarketIndex.setUpdown(Double.parseDouble(doc.selectFirst("#content > div.article > div.section2 > div.section_stock_market > div.section_stock > div.kospi_area.group_quot.quot_opn > div.heading_area > a > span > span.num2").ownText().replaceAll(",", "").strip()));
+            kospiMarketIndex.setRate(Double.parseDouble(doc.selectFirst("#content > div.article > div.section2 > div.section_stock_market > div.section_stock > div.kospi_area.group_quot.quot_opn > div.heading_area > a > span > span.num3").ownText().replaceAll("%", "").strip()));
+            marketIndexList.add(kospiMarketIndex);
 
-            Index kosdaqIndex = new Index();
-            kosdaqIndex.setName(doc.selectFirst("#content > div.article > div.section2 > div.section_stock_market > div.section_stock > div.kosdaq_area.group_quot > div.heading_area > h4 > a > em > span").ownText());
-            kosdaqIndex.setValue(Long.parseLong(doc.selectFirst("#content > div.article > div.section2 > div.section_stock_market > div.section_stock > div.kosdaq_area.group_quot > div.heading_area > a > span > span.num").ownText().strip()));
-            kosdaqIndex.setUpdown(Long.parseLong(doc.selectFirst("#content > div.article > div.section2 > div.section_stock_market > div.section_stock > div.kosdaq_area.group_quot > div.heading_area > a > span > span.num").ownText().strip()));
-            kosdaqIndex.setRate(Double.parseDouble(doc.selectFirst("#content > div.article > div.section2 > div.section_stock_market > div.section_stock > div.kosdaq_area.group_quot > div.heading_area > a > span > span.num3").ownText()));
-            indexList.add(kosdaqIndex);
+            MarketIndex kosdaqMarketIndex = new MarketIndex();
+            kosdaqMarketIndex.setName(doc.selectFirst("#content > div.article > div.section2 > div.section_stock_market > div.section_stock > div.kosdaq_area.group_quot > div.heading_area > h4 > a > em > span").ownText());
+            kosdaqMarketIndex.setIvalue(Double.parseDouble(doc.selectFirst("#content > div.article > div.section2 > div.section_stock_market > div.section_stock > div.kosdaq_area.group_quot > div.heading_area > a > span > span.num").ownText().replaceAll(",", "").strip()));
+            kosdaqMarketIndex.setUpdown(Double.parseDouble(doc.selectFirst("#content > div.article > div.section2 > div.section_stock_market > div.section_stock > div.kosdaq_area.group_quot > div.heading_area > a > span > span.num").ownText().replaceAll(",", "").strip()));
+            kosdaqMarketIndex.setRate(Double.parseDouble(doc.selectFirst("#content > div.article > div.section2 > div.section_stock_market > div.section_stock > div.kosdaq_area.group_quot > div.heading_area > a > span > span.num3").ownText().replaceAll("%", "").strip()));
+            marketIndexList.add(kosdaqMarketIndex);
 
         }
-        return indexList;
+        return marketIndexList;
     }
 
     private Document getDocumentFromConnection(String url) {

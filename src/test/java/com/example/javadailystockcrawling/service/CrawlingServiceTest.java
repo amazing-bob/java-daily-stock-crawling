@@ -24,7 +24,7 @@ class CrawlingServiceTest {
 
     @BeforeEach
     void setUp() {
-        crawlingService = new CrawlingService();
+//        crawlingService = new CrawlingService();
     }
 
     @Test
