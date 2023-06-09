@@ -87,8 +87,9 @@ public class CrawlingService {
                     long volume = Long.parseLong(volumeStr.replaceAll(",", "").strip());
 
                     StockPriceInfo stockPriceInfo = new StockPriceInfo();
-                    stockPriceInfo.setCode(code);
+                    stockPriceInfo.setKind(StockPriceInfo.KIND_UPPER_LIMIT);
                     stockPriceInfo.setName(name);
+                    stockPriceInfo.setCode(code);
                     stockPriceInfo.setMarket(StockPriceInfo.MARKET_KOSDAQ);
                     stockPriceInfo.setPrice(price);
                     stockPriceInfo.setUpdown(updown);
