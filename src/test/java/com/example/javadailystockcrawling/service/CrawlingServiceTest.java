@@ -1,18 +1,14 @@
 package com.example.javadailystockcrawling.service;
 
-import com.example.javadailystockcrawling.dto.Stock;
+import com.example.javadailystockcrawling.dto.StockPriceInfo;
 import com.example.javadailystockcrawling.dto.UpperLimitStocks;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @WebMvcTest(CrawlingService.class)
 class CrawlingServiceTest {
@@ -30,11 +26,11 @@ class CrawlingServiceTest {
     @Test
     void crawlingUppserLimitStocks() {
         UpperLimitStocks upperLimitStocks = crawlingService.crawlingUppserLimitStocks();
-        List<Stock> kospiUpperLimitStocks = upperLimitStocks.getKospiUpperLimitStocks();
-        List<Stock> kosdaqUpperLimitStocks = upperLimitStocks.getKosdaqUpperLimitStocks();
-        System.out.println("kospiUpperLimitStocks = " + kospiUpperLimitStocks);
+        List<StockPriceInfo> kospiUpperLimitStockPriceInfos = upperLimitStocks.getKospiUpperLimitStocks();
+        List<StockPriceInfo> kosdaqUpperLimitStockPriceInfos = upperLimitStocks.getKosdaqUpperLimitStocks();
+        System.out.println("kospiUpperLimitStocks = " + kospiUpperLimitStockPriceInfos);
         System.out.println("-------------------------");
-        System.out.println("kosdaqUpperLimitStocks = " + kosdaqUpperLimitStocks);
+        System.out.println("kosdaqUpperLimitStocks = " + kosdaqUpperLimitStockPriceInfos);
 
         String s ="-29.93%";
         double d = Double.parseDouble(s.replaceAll("%", "").strip());

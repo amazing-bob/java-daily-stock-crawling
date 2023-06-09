@@ -1,6 +1,5 @@
 package com.example.javadailystockcrawling.dto;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import org.springframework.boot.jackson.JsonComponent;
@@ -10,37 +9,37 @@ import java.util.List;
 @JsonComponent
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class UpperLimitStocks {
-    private List<Stock> kospiUpperLimitStocks;
-    private List<Stock> kosdaqUpperLimitStocks;
+    private List<StockPriceInfo> kospiUpperLimitStockPriceInfos;
+    private List<StockPriceInfo> kosdaqUpperLimitStockPriceInfos;
 
     public UpperLimitStocks() {    }
 
-    public UpperLimitStocks(List<Stock> kospiUpperLimitStocks, List<Stock> kosdaqUpperLimitStocks) {
-        this.kospiUpperLimitStocks = kospiUpperLimitStocks;
-        this.kosdaqUpperLimitStocks = kosdaqUpperLimitStocks;
+    public UpperLimitStocks(List<StockPriceInfo> kospiUpperLimitStockPriceInfos, List<StockPriceInfo> kosdaqUpperLimitStockPriceInfos) {
+        this.kospiUpperLimitStockPriceInfos = kospiUpperLimitStockPriceInfos;
+        this.kosdaqUpperLimitStockPriceInfos = kosdaqUpperLimitStockPriceInfos;
     }
 
-    public List<Stock> getKospiUpperLimitStocks() {
-        return kospiUpperLimitStocks;
+    public List<StockPriceInfo> getKospiUpperLimitStocks() {
+        return kospiUpperLimitStockPriceInfos;
     }
 
-    public void setKospiUpperLimitStocks(List<Stock> kospiUpperLimitStocks) {
-        this.kospiUpperLimitStocks = kospiUpperLimitStocks;
+    public void setKospiUpperLimitStocks(List<StockPriceInfo> kospiUpperLimitStockPriceInfos) {
+        this.kospiUpperLimitStockPriceInfos = kospiUpperLimitStockPriceInfos;
     }
 
-    public List<Stock> getKosdaqUpperLimitStocks() {
-        return kosdaqUpperLimitStocks;
+    public List<StockPriceInfo> getKosdaqUpperLimitStocks() {
+        return kosdaqUpperLimitStockPriceInfos;
     }
 
-    public void setKosdaqUpperLimitStocks(List<Stock> kosdaqUpperLimitStocks) {
-        this.kosdaqUpperLimitStocks = kosdaqUpperLimitStocks;
+    public void setKosdaqUpperLimitStocks(List<StockPriceInfo> kosdaqUpperLimitStockPriceInfos) {
+        this.kosdaqUpperLimitStockPriceInfos = kosdaqUpperLimitStockPriceInfos;
     }
 
     @Override
     public String toString() {
         return "UpperLimitStocks{" +
-                "kospiUpperLimitStocks=" + kospiUpperLimitStocks +
-                ", kosdaqUpperLimitStocks=" + kosdaqUpperLimitStocks +
+                "kospiUpperLimitStocks=" + kospiUpperLimitStockPriceInfos +
+                ", kosdaqUpperLimitStocks=" + kosdaqUpperLimitStockPriceInfos +
                 '}';
     }
 }

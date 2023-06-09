@@ -1,4 +1,4 @@
-CREATE  TABLE stock (
+CREATE  TABLE stockPriceInfo (
     id identity not null primary key,
     code VARCHAR2 not null,
     name VARCHAR2 not null,

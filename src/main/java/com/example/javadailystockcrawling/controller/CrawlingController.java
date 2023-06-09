@@ -2,7 +2,7 @@ package com.example.javadailystockcrawling.controller;
 
 import com.example.javadailystockcrawling.annotation.Auth;
 import com.example.javadailystockcrawling.dto.MarketIndex;
-import com.example.javadailystockcrawling.dto.Stock;
+import com.example.javadailystockcrawling.dto.StockPriceInfo;
 import com.example.javadailystockcrawling.dto.UpperLimitStocks;
 import com.example.javadailystockcrawling.service.CrawlingService;
 import lombok.RequiredArgsConstructor;
@@ -30,12 +30,12 @@ public class CrawlingController {
 
         System.out.println("\n\n상한가\n---------------");
         UpperLimitStocks upperLimitStocks = crawlingService.crawlingUppserLimitStocks();
-        for ( Stock stock : upperLimitStocks.getKospiUpperLimitStocks()) {
-            System.out.println(stock);
+        for ( StockPriceInfo stockPriceInfo : upperLimitStocks.getKospiUpperLimitStocks()) {
+            System.out.println(stockPriceInfo);
         }
         System.out.println("---------------");
-        for ( Stock stock : upperLimitStocks.getKosdaqUpperLimitStocks()) {
-            System.out.println(stock);
+        for ( StockPriceInfo stockPriceInfo : upperLimitStocks.getKosdaqUpperLimitStocks()) {
+            System.out.println(stockPriceInfo);
         }
 
         return ResponseEntity

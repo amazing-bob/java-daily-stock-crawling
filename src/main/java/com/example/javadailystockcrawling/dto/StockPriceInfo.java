@@ -5,20 +5,32 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.boot.autoconfigure.web.WebProperties;
 
 import java.text.DecimalFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Date;
+
+
 
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "stock")
-public class Stock {
+@Table(name = "stock_price_info")
+public class StockPriceInfo {
+    public static String  KIND_UPPER_LIMIT = "UPPER_LIMIT";
+    public static String  KIND_TRADING_VOLUME = "TRADING_VOLUME";
+    public static String MARKET_KOSPI = "KOSPI";
+    public static String MARKET_KOSDAQ = "KOSDAQ";
+
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+    private LocalDate toDate;
+    private String kind;
     private String code;
     private String name;
     private String market;
@@ -26,6 +38,19 @@ public class Stock {
     private long updown;
     private double rate;
     private long volume;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+
+    @PrePersist
+    public void prePersist() {
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = this.createdAt;
+    }
+
+    @PreUpdate
+    public void preUpate() {
+        this.updatedAt = LocalDateTime.now();
+    }
 
     @Override
     public String toString() {

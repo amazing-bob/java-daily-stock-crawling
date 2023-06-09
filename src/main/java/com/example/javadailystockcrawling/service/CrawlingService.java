@@ -1,7 +1,7 @@
 package com.example.javadailystockcrawling.service;
 
 import com.example.javadailystockcrawling.dto.MarketIndex;
-import com.example.javadailystockcrawling.dto.Stock;
+import com.example.javadailystockcrawling.dto.StockPriceInfo;
 import com.example.javadailystockcrawling.dto.UpperLimitStocks;
 import com.example.javadailystockcrawling.repository.StockRepository;
 import lombok.RequiredArgsConstructor;
@@ -26,8 +26,8 @@ public class CrawlingService {
 
     // 상한가 종목 크롤링
     public UpperLimitStocks crawlingUppserLimitStocks() {
-        List<Stock> kospiUpperLimitStocks = new ArrayList<>();
-        List<Stock> kosdaqUpperLimitStocks = new ArrayList<>();
+        List<StockPriceInfo> kospiUpperLimitStockPriceInfos = new ArrayList<>();
+        List<StockPriceInfo> kosdaqUpperLimitStockPriceInfos = new ArrayList<>();
 
         try {
             String url = "https://finance.naver.com/sise/sise_upper.naver";
@@ -39,28 +39,32 @@ public class CrawlingService {
                 Element thElement = trElement.selectFirst("td:nth-of-type(4) > a");
                 if (thElement != null) {
                     String name = trElement.selectFirst("td:nth-of-type(4) > a").ownText();
+                    String code = String.valueOf(trElement.selectFirst("td:nth-of-type(4) > a").attr("href")).split("code=")[1];
                     String priceStr = trElement.selectFirst("td:nth-of-type(5)").ownText();
                     String updownStr = trElement.selectFirst("td:nth-of-type(6) > span").ownText().strip();
+                    boolean isUp = trElement.selectFirst("td:nth-of-type(6) > span").attr("class").contains("red02");
                     String rateStr = trElement.selectFirst("td:nth-of-type(7) > span").ownText().strip();
                     String volumeStr = trElement.selectFirst("td:nth-of-type(8)").ownText();
 
                     long price = Long.parseLong(priceStr.replaceAll(",", "").strip());
                     long updown = Long.parseLong(updownStr.replaceAll(",", "").strip());
+                    if (!isUp) updown *= -1;
                     double rate = Double.parseDouble(rateStr.replaceAll("%", "").strip());
                     long volume = Long.parseLong(volumeStr.replaceAll(",", "").strip());
 
-                    Stock stock = new Stock();
-                    stock.setName(name);
-                    stock.setCode("testcode1");
-                    stock.setMarket("kospi");
-                    stock.setPrice(price);
-                    stock.setUpdown(updown);
-                    stock.setRate(rate);
-                    stock.setVolume(volume);
+                    StockPriceInfo stockPriceInfo = new StockPriceInfo();
+                    stockPriceInfo.setKind(StockPriceInfo.KIND_UPPER_LIMIT);
+                    stockPriceInfo.setName(name);
+                    stockPriceInfo.setCode(code);
+                    stockPriceInfo.setMarket(StockPriceInfo.MARKET_KOSPI);
+                    stockPriceInfo.setPrice(price);
+                    stockPriceInfo.setUpdown(updown);
+                    stockPriceInfo.setRate(rate);
+                    stockPriceInfo.setVolume(volume);
 
-                    kospiUpperLimitStocks.add(stock);
+                    kospiUpperLimitStockPriceInfos.add(stockPriceInfo);
                 }
-                stockRepository.saveAll(kospiUpperLimitStocks);
+                stockRepository.saveAll(kospiUpperLimitStockPriceInfos);
             });
 
             // KOSDAQ 상한가 종목 크롤링
@@ -69,28 +73,31 @@ public class CrawlingService {
                 Element thElement = trElement.selectFirst("td:nth-of-type(4) > a");
                 if (thElement != null) {
                     String name = trElement.selectFirst("td:nth-of-type(4) > a").ownText();
+                    String code = String.valueOf(trElement.selectFirst("td:nth-of-type(4) > a").attr("href")).split("code=")[1];
                     String  priceStr = trElement.selectFirst("td:nth-of-type(5)").ownText();
                     String updownStr = trElement.selectFirst("td:nth-of-type(6) > span").ownText().strip();
+                    boolean isUp = trElement.selectFirst("td:nth-of-type(6) > span").attr("class").contains("red02");
                     String rateStr = trElement.selectFirst("td:nth-of-type(7) > span").ownText().strip();
                     String volumeStr = trElement.selectFirst("td:nth-of-type(8)").ownText();
 
                     long price = Long.parseLong(priceStr.replaceAll(",", "").strip());
                     long updown = Long.parseLong(updownStr.replaceAll(",", "").strip());
+                    if (!isUp) updown *= -1;
                     double rate = Double.parseDouble(rateStr.replaceAll("%", "").strip());
                     long volume = Long.parseLong(volumeStr.replaceAll(",", "").strip());
 
-                    Stock stock = new Stock();
-                    stock.setCode("testcode1");
-                    stock.setName(name);
-                    stock.setMarket("kosdaq");
-                    stock.setPrice(price);
-                    stock.setUpdown(updown);
-                    stock.setRate(rate);
-                    stock.setVolume(volume);
+                    StockPriceInfo stockPriceInfo = new StockPriceInfo();
+                    stockPriceInfo.setCode(code);
+                    stockPriceInfo.setName(name);
+                    stockPriceInfo.setMarket(StockPriceInfo.MARKET_KOSDAQ);
+                    stockPriceInfo.setPrice(price);
+                    stockPriceInfo.setUpdown(updown);
+                    stockPriceInfo.setRate(rate);
+                    stockPriceInfo.setVolume(volume);
 
-                    kosdaqUpperLimitStocks.add(stock);
+                    kosdaqUpperLimitStockPriceInfos.add(stockPriceInfo);
                 }
-                stockRepository.saveAll(kosdaqUpperLimitStocks);
+                stockRepository.saveAll(kosdaqUpperLimitStockPriceInfos);
             });
 
         } catch (IOException e) {
@@ -98,7 +105,7 @@ public class CrawlingService {
         }
 
 
-        return new UpperLimitStocks(kospiUpperLimitStocks,kosdaqUpperLimitStocks);
+        return new UpperLimitStocks(kospiUpperLimitStockPriceInfos, kosdaqUpperLimitStockPriceInfos);
     }
 
 
