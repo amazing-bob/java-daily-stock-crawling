@@ -90,7 +90,7 @@ public class CrawlingService {
 
                     kosdaqUpperLimitStocks.add(stock);
                 }
-//                stockRepository.saveAll(kosdaqUpperLimitStocks);
+                stockRepository.saveAll(kosdaqUpperLimitStocks);
             });
 
         } catch (IOException e) {
