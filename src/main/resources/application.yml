@@ -34,5 +34,9 @@ spring:
 #      mode:
 #      schema-locations: classpath:h2/schema.sql
 
+  mybatis:
+    mapper-locations: classpath:mapper/**/*.xml
+
+
 
 
