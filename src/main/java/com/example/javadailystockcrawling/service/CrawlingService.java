@@ -3,6 +3,7 @@ package com.example.javadailystockcrawling.service;
 import com.example.javadailystockcrawling.dto.MarketIndex;
 import com.example.javadailystockcrawling.dto.StockPriceInfo;
 import com.example.javadailystockcrawling.dto.UpperLimitStocks;
+import com.example.javadailystockcrawling.repository.MarketIndexRepository;
 import com.example.javadailystockcrawling.repository.StockRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +23,7 @@ import java.util.List;
 @Slf4j
 public class CrawlingService {
     private final StockRepository stockRepository;
-
+    private final MarketIndexRepository marketIndexRepository;
 
     // 상한가 종목 크롤링
     public UpperLimitStocks crawlingUppserLimitStocks() {
@@ -33,35 +34,14 @@ public class CrawlingService {
             String url = "https://finance.naver.com/sise/sise_upper.naver";
             Connection conn = Jsoup.connect(url);
             Document doc =  conn.get();
+
             // KOSPI 상한가 종목 크롤링
             Elements kospiElements = doc.select("#contentarea > div:nth-child(3) > table > tbody tr");
             kospiElements.forEach(trElement -> {
                 Element thElement = trElement.selectFirst("td:nth-of-type(4) > a");
                 if (thElement != null) {
-                    String name = trElement.selectFirst("td:nth-of-type(4) > a").ownText();
-                    String code = String.valueOf(trElement.selectFirst("td:nth-of-type(4) > a").attr("href")).split("code=")[1];
-                    String priceStr = trElement.selectFirst("td:nth-of-type(5)").ownText();
-                    String updownStr = trElement.selectFirst("td:nth-of-type(6) > span").ownText().strip();
-                    boolean isUp = trElement.selectFirst("td:nth-of-type(6) > span").attr("class").contains("red02");
-                    String rateStr = trElement.selectFirst("td:nth-of-type(7) > span").ownText().strip();
-                    String volumeStr = trElement.selectFirst("td:nth-of-type(8)").ownText();
-
-                    long price = Long.parseLong(priceStr.replaceAll(",", "").strip());
-                    long updown = Long.parseLong(updownStr.replaceAll(",", "").strip());
-                    if (!isUp) updown *= -1;
-                    double rate = Double.parseDouble(rateStr.replaceAll("%", "").strip());
-                    long volume = Long.parseLong(volumeStr.replaceAll(",", "").strip());
-
-                    StockPriceInfo stockPriceInfo = new StockPriceInfo();
-                    stockPriceInfo.setKind(StockPriceInfo.KIND_UPPER_LIMIT);
-                    stockPriceInfo.setName(name);
-                    stockPriceInfo.setCode(code);
-                    stockPriceInfo.setMarket(StockPriceInfo.MARKET_KOSPI);
-                    stockPriceInfo.setPrice(price);
-                    stockPriceInfo.setUpdown(updown);
-                    stockPriceInfo.setRate(rate);
-                    stockPriceInfo.setVolume(volume);
-
+                    // 상한가 종목 정보 파싱
+                    StockPriceInfo stockPriceInfo = parseUpperLimitStockPriceInfo(trElement, StockPriceInfo.MARKET_KOSPI);
                     kospiUpperLimitStockPriceInfos.add(stockPriceInfo);
                 }
                 stockRepository.saveAll(kospiUpperLimitStockPriceInfos);
@@ -72,29 +52,7 @@ public class CrawlingService {
             kosdaqElements.forEach(trElement -> {
                 Element thElement = trElement.selectFirst("td:nth-of-type(4) > a");
                 if (thElement != null) {
-                    String name = trElement.selectFirst("td:nth-of-type(4) > a").ownText();
-                    String code = String.valueOf(trElement.selectFirst("td:nth-of-type(4) > a").attr("href")).split("code=")[1];
-                    String  priceStr = trElement.selectFirst("td:nth-of-type(5)").ownText();
-                    String updownStr = trElement.selectFirst("td:nth-of-type(6) > span").ownText().strip();
-                    boolean isUp = trElement.selectFirst("td:nth-of-type(6) > span").attr("class").contains("red02");
-                    String rateStr = trElement.selectFirst("td:nth-of-type(7) > span").ownText().strip();
-                    String volumeStr = trElement.selectFirst("td:nth-of-type(8)").ownText();
-
-                    long price = Long.parseLong(priceStr.replaceAll(",", "").strip());
-                    long updown = Long.parseLong(updownStr.replaceAll(",", "").strip());
-                    if (!isUp) updown *= -1;
-                    double rate = Double.parseDouble(rateStr.replaceAll("%", "").strip());
-                    long volume = Long.parseLong(volumeStr.replaceAll(",", "").strip());
-
-                    StockPriceInfo stockPriceInfo = new StockPriceInfo();
-                    stockPriceInfo.setKind(StockPriceInfo.KIND_UPPER_LIMIT);
-                    stockPriceInfo.setName(name);
-                    stockPriceInfo.setCode(code);
-                    stockPriceInfo.setMarket(StockPriceInfo.MARKET_KOSDAQ);
-                    stockPriceInfo.setPrice(price);
-                    stockPriceInfo.setUpdown(updown);
-                    stockPriceInfo.setRate(rate);
-                    stockPriceInfo.setVolume(volume);
+                    StockPriceInfo stockPriceInfo = parseUpperLimitStockPriceInfo(trElement, StockPriceInfo.MARKET_KOSDAQ);
 
                     kosdaqUpperLimitStockPriceInfos.add(stockPriceInfo);
                 }
@@ -109,6 +67,39 @@ public class CrawlingService {
         return new UpperLimitStocks(kospiUpperLimitStockPriceInfos, kosdaqUpperLimitStockPriceInfos);
     }
 
+    /**
+     * 상한가 종목 정보 파싱
+     * @param trElement
+     * @param marketType
+     * @return StockPriceInfo
+     */
+    private StockPriceInfo parseUpperLimitStockPriceInfo(Element trElement, String marketType) {
+        String name = trElement.selectFirst("td:nth-of-type(4) > a").ownText();
+        String code = String.valueOf(trElement.selectFirst("td:nth-of-type(4) > a").attr("href")).split("code=")[1];
+        String priceStr = trElement.selectFirst("td:nth-of-type(5)").ownText();
+        String updownStr = trElement.selectFirst("td:nth-of-type(6) > span").ownText().strip();
+        boolean isUp = trElement.selectFirst("td:nth-of-type(6) > span").attr("class").contains("red02");
+        String rateStr = trElement.selectFirst("td:nth-of-type(7) > span").ownText().strip();
+        String volumeStr = trElement.selectFirst("td:nth-of-type(8)").ownText();
+
+        long price = Long.parseLong(priceStr.replaceAll(",", "").strip());
+        long updown = Long.parseLong(updownStr.replaceAll(",", "").strip());
+        if (!isUp) updown *= -1;
+        double rate = Double.parseDouble(rateStr.replaceAll("%", "").strip());
+        long volume = Long.parseLong(volumeStr.replaceAll(",", "").strip());
+
+        StockPriceInfo stockPriceInfo = new StockPriceInfo();
+        stockPriceInfo.setKind(StockPriceInfo.KIND_UPPER_LIMIT);
+        stockPriceInfo.setName(name);
+        stockPriceInfo.setCode(code);
+        stockPriceInfo.setMarket(marketType);
+        stockPriceInfo.setPrice(price);
+        stockPriceInfo.setUpdown(updown);
+        stockPriceInfo.setRate(rate);
+        stockPriceInfo.setVolume(volume);
+        return stockPriceInfo;
+    }
+
 
     // 시장 지표 크롤링
     public List<MarketIndex> crawlingMarketIndexes() {
@@ -121,6 +112,9 @@ public class CrawlingService {
         marketIndexList.addAll(domesticMarketListIndex);
         marketIndexList.addAll(usMarketListIndex);
         marketIndexList.addAll(materialMarketListIndex);
+
+        marketIndexRepository.saveAll(marketIndexList);
+
 
         return marketIndexList;
     }

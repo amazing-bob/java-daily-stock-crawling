@@ -1,5 +1,5 @@
 2023-06-09 07:03:57 database: flush
-org.h2.message.DbException: General error: "org.h2.mvstore.MVStoreException: The file is locked: /Users/buru/Projects/java-daily-stock-crawling/data/h2/testdb.mv.db [2.1.210/7]" [50000-210]
+org.h2.message.DbException: General error: "org.h2.mvstore.MVStoreException: The file is locked: /Users/buru/Projects/java-daily-stockPriceInfo-crawling/data/h2/testdb.mv.db [2.1.210/7]" [50000-210]
 	at org.h2.message.DbException.get(DbException.java:216)
 	at org.h2.message.DbException.convert(DbException.java:414)
 	at org.h2.mvstore.db.Store.lambda$new$0(Store.java:120)
@@ -34,17 +34,17 @@ org.h2.message.DbException: General error: "org.h2.mvstore.MVStoreException: The
 	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
 	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
 	at java.base/java.lang.Thread.run(Thread.java:833)
-Caused by: org.h2.jdbc.JdbcSQLNonTransientException: General error: "org.h2.mvstore.MVStoreException: The file is locked: /Users/buru/Projects/java-daily-stock-crawling/data/h2/testdb.mv.db [2.1.210/7]" [50000-210]
+Caused by: org.h2.jdbc.JdbcSQLNonTransientException: General error: "org.h2.mvstore.MVStoreException: The file is locked: /Users/buru/Projects/java-daily-stockPriceInfo-crawling/data/h2/testdb.mv.db [2.1.210/7]" [50000-210]
 	at org.h2.message.DbException.getJdbcSQLException(DbException.java:573)
 	at org.h2.message.DbException.getJdbcSQLException(DbException.java:496)
 	... 34 more
-Caused by: org.h2.mvstore.MVStoreException: The file is locked: /Users/buru/Projects/java-daily-stock-crawling/data/h2/testdb.mv.db [2.1.210/7]
+Caused by: org.h2.mvstore.MVStoreException: The file is locked: /Users/buru/Projects/java-daily-stockPriceInfo-crawling/data/h2/testdb.mv.db [2.1.210/7]
 	at org.h2.mvstore.DataUtils.newMVStoreException(DataUtils.java:1004)
 	at org.h2.mvstore.FileStore.open(FileStore.java:163)
 	at org.h2.mvstore.MVStore.<init>(MVStore.java:444)
 	... 28 more
 2023-06-09 07:04:03 database: flush
-org.h2.message.DbException: General error: "org.h2.mvstore.MVStoreException: The file is locked: /Users/buru/Projects/java-daily-stock-crawling/data/h2/testdb.mv.db [2.1.210/7]" [50000-210]
+org.h2.message.DbException: General error: "org.h2.mvstore.MVStoreException: The file is locked: /Users/buru/Projects/java-daily-stockPriceInfo-crawling/data/h2/testdb.mv.db [2.1.210/7]" [50000-210]
 	at org.h2.message.DbException.get(DbException.java:216)
 	at org.h2.message.DbException.convert(DbException.java:414)
 	at org.h2.mvstore.db.Store.lambda$new$0(Store.java:120)
@@ -79,11 +79,11 @@ org.h2.message.DbException: General error: "org.h2.mvstore.MVStoreException: The
 	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
 	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
 	at java.base/java.lang.Thread.run(Thread.java:833)
-Caused by: org.h2.jdbc.JdbcSQLNonTransientException: General error: "org.h2.mvstore.MVStoreException: The file is locked: /Users/buru/Projects/java-daily-stock-crawling/data/h2/testdb.mv.db [2.1.210/7]" [50000-210]
+Caused by: org.h2.jdbc.JdbcSQLNonTransientException: General error: "org.h2.mvstore.MVStoreException: The file is locked: /Users/buru/Projects/java-daily-stockPriceInfo-crawling/data/h2/testdb.mv.db [2.1.210/7]" [50000-210]
 	at org.h2.message.DbException.getJdbcSQLException(DbException.java:573)
 	at org.h2.message.DbException.getJdbcSQLException(DbException.java:496)
 	... 34 more
-Caused by: org.h2.mvstore.MVStoreException: The file is locked: /Users/buru/Projects/java-daily-stock-crawling/data/h2/testdb.mv.db [2.1.210/7]
+Caused by: org.h2.mvstore.MVStoreException: The file is locked: /Users/buru/Projects/java-daily-stockPriceInfo-crawling/data/h2/testdb.mv.db [2.1.210/7]
 	at org.h2.mvstore.DataUtils.newMVStoreException(DataUtils.java:1004)
 	at org.h2.mvstore.FileStore.open(FileStore.java:163)
 	at org.h2.mvstore.MVStore.<init>(MVStore.java:444)
