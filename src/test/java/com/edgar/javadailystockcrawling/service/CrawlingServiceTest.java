@@ -1,11 +1,17 @@
 package com.edgar.javadailystockcrawling.service;
 
+import com.edgar.javadailystockcrawling.dto.MarketIndex;
 import com.edgar.javadailystockcrawling.dto.StockPriceInfo;
 import com.edgar.javadailystockcrawling.dto.UpperLimitStocks;
+import com.edgar.javadailystockcrawling.mapper.MarketIndexMapper;
+import com.edgar.javadailystockcrawling.repository.MarketIndexRepository;
+import com.edgar.javadailystockcrawling.repository.StockRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
@@ -16,12 +22,19 @@ class CrawlingServiceTest {
     @Autowired
     MockMvc mockMvc;
 
+    @MockBean
+    StockRepository stockRepository;
+
+    @MockBean
+    MarketIndexRepository  marketIndexRepository;
+
     CrawlingService crawlingService;
 
     @BeforeEach
     void setUp() {
-//        crawlingService = new CrawlingService();
+        crawlingService = new CrawlingService(stockRepository, marketIndexRepository);
     }
+
 
     @Test
     void crawlingUppserLimitStocks() {
@@ -40,5 +53,8 @@ class CrawlingServiceTest {
 
     @Test
     void crawlingMarketIndexes() {
+        List<MarketIndex> marketIndexList = crawlingService.crawlingMarketIndexes();
+//        System.out.println("marketIndexList = " + marketIndexList);
     }
+
 }
