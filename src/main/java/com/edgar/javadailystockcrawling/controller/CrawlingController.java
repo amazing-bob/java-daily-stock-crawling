@@ -15,7 +15,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/crawling")
 @RequiredArgsConstructor
-@Auth
+//@Auth //Authorization 적용
 @Slf4j
 public class CrawlingController {
     private final CrawlingService crawlingService;
