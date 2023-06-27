@@ -42,7 +42,7 @@ public class AuthInterceptor implements HandlerInterceptor {
     private boolean checkAnnotation(Object handler, Class<Auth> authClass) {
         // resource javascript, html .....
         if (handler instanceof ResourceHttpRequestHandler) {
-            return true;
+            return false;
         }
 
         // @Auth 어노테이션 체크
